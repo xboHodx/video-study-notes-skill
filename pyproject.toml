@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "video-study-notes-skill"
+version = "0.1.0"
+description = "CLI helpers for the video-study-notes skill workflow"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "ctranslate2>=4.5.0",
+  "faster-whisper>=1.1.1",
+  "yt-dlp>=2025.3.31",
+]
+
+[project.scripts]
+video-notes = "video_study_notes.cli:main"
+video-study-notes = "video_study_notes.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/video_study_notes"]

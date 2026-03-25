@@ -13,3 +13,26 @@
 - 使用uv来管理python环境
 - 使用yt-dlp来下载资源
 - 使用faster_whisper来转录音频，自动检测是否有英伟达gpu，以此来加速
+
+## 支持 `uv tool install`
+本项目已提供标准 Python 包入口点，可直接通过 `uv tool install` 安装为全局命令。
+### 从 GitHub 安装
+```bash
+uv tool install git+https://github.com/xboHodx/video-study-notes-skill
+```
+安装后可用命令：
+- `video-notes`
+- `video-study-notes`（别名）
+示例：
+```bash
+video-notes --help
+video-notes check
+video-notes prepare-audio --help
+video-notes extract-keyframes --help
+```
+
+### 本地开发测试（可编辑安装）
+在仓库根目录执行：
+```bash
+uv tool install --editable . --force
+```
