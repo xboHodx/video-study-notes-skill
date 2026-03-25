@@ -30,7 +30,7 @@ def load_timestamps(path: Path | None) -> list[float]:
     if path is None:
         return []
     timestamps: list[float] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
@@ -116,21 +116,55 @@ def main(argv: list[str] | None = None) -> int:
     if not video.exists():
         print(f"Video not found: {video}", file=sys.stderr)
         return 1
+    if not video.is_file():
+        print(
+            f"Invalid --video path (expected a file, got non-file): {video}",
+            file=sys.stderr,
+        )
+        return 1
 
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp_path = Path(args.timestamps_file).expanduser().resolve() if args.timestamps_file else None
-    timestamps = load_timestamps(timestamp_path)
+    if timestamp_path:
+        if not timestamp_path.exists():
+            print(f"Timestamps file not found: {timestamp_path}", file=sys.stderr)
+            return 1
+        if not timestamp_path.is_file():
+            print(
+                f"Invalid --timestamps-file path (expected a file, got non-file): {timestamp_path}",
+                file=sys.stderr,
+            )
+            return 1
+
+    try:
+        timestamps = load_timestamps(timestamp_path)
+    except OSError as exc:
+        print(f"Failed to read timestamps file '{timestamp_path}': {exc}", file=sys.stderr)
+        return 1
+    except ValueError as exc:
+        print(f"Invalid timestamp in '{timestamp_path}': {exc}", file=sys.stderr)
+        return 1
 
     scene_count = 0
     cue_count = 0
 
-    if not args.no_scene_detect:
-        scene_count = extract_scene_frames(video, output_dir, args.scene_threshold)
+    try:
+        if not args.no_scene_detect:
+            scene_count = extract_scene_frames(video, output_dir, args.scene_threshold)
 
-    if timestamps:
-        cue_count = extract_timestamp_frames(video, output_dir, timestamps)
+        if timestamps:
+            cue_count = extract_timestamp_frames(video, output_dir, timestamps)
+    except FileNotFoundError:
+        print("ffmpeg not found. Please install ffmpeg and ensure it is available on PATH.", file=sys.stderr)
+        return 1
+    except subprocess.CalledProcessError as exc:
+        print(f"ffmpeg failed while extracting keyframes (exit code {exc.returncode}).", file=sys.stderr)
+        return 1
+    except OSError as exc:
+        print(f"Failed to run ffmpeg for keyframe extraction: {exc}", file=sys.stderr)
+        return 1
 
     print(f"Output directory: {output_dir}")
     print(f"Scene frames: {scene_count}")

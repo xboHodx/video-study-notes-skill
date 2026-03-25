@@ -27,9 +27,33 @@ uv tool install git+https://github.com/xboHodx/video-study-notes-skill
 ```bash
 video-notes --help
 video-notes check
+video-notes install-skill --ai codex
 video-notes prepare-audio --help
 video-notes extract-keyframes --help
 ```
+
+`install-skill` 用于把本仓库作为 skill 安装到 AI 客户端目录：
+```bash
+# codex -> <project>/.agents/skills/video-study-notes
+video-notes install-skill --ai codex --project /path/to/your-project
+# claude -> <project>/.claude/skills/video-study-notes
+video-notes install-skill --ai claude --project /path/to/your-project
+# 如果你就在目标项目根目录，可省略 --project
+video-notes install-skill --ai codex
+```
+
+脚本来源说明（避免混淆）：
+- 源码仓库模式：`--source` 指向本仓库时，安装到目标项目的是当前仓库里的脚本与模板。
+- wheel 模板模式：未提供有效 `--source` 时，会使用 `video-notes` 包内的 `skill_template` 进行安装。
+- 在 wheel 模板模式下，会同时下发 `skill_template/src/video_study_notes` 运行模块，`scripts/*.py` 可直接本地导入执行。
+- 若本地导入不可用，`scripts/*.py` 仍会自动回退调用全局 `video-notes` 子命令。
+
+说明：
+- 建议在仓库根目录执行该命令，或显式传 `--source <skill目录>`
+- Windows 下若无创建符号链接权限，会自动回退为复制安装
+- `--ai` 支持部分 agent 名称映射（如 `codex`, `claude`, `gemini`, `cursor-agent`, `kiro-cli` 等）
+- 通过 `uv tool install` 安装后，即使本地没有源码目录，也可使用包内自带模板完成安装
+- 安装完成后重启 AI 会话，即可让 skill 被重新发现
 
 ### 本地开发测试（可编辑安装）
 在仓库根目录执行：
