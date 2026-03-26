@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "video-study-notes-skill"
+version = "0.1.0"
+description = "CLI helpers for the video-study-notes skill workflow"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "ctranslate2>=4.5.0",
+  "faster-whisper>=1.1.1",
+  "yt-dlp>=2025.3.31",
+]
+
+[project.scripts]
+video-notes = "video_study_notes.cli:main"
+video-study-notes = "video_study_notes.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/video_study_notes"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"SKILL.md" = "video_study_notes/skill_template/SKILL.md"
+"assets" = "video_study_notes/skill_template/assets"
+"scripts" = "video_study_notes/skill_template/scripts"
+"src/video_study_notes" = "video_study_notes/skill_template/src/video_study_notes"
+"subskills" = "video_study_notes/skill_template/subskills"
+"cookies.example.txt" = "video_study_notes/skill_template/cookies.example.txt"
+"requirements-skill.txt" = "video_study_notes/skill_template/requirements-skill.txt"
