@@ -33,7 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def output_path(output_dir: Path, input_path: Path, args: argparse.Namespace) -> Path:
     stem = args.audio_name or input_path.stem
-    suffix = input_path.suffix if input_path.suffix.lower() in AUDIO_SUFFIXES else f".{args.audio_format}"
+    suffix = input_path.suffix.lower() if input_path.suffix.lower() in AUDIO_SUFFIXES else f".{args.audio_format.lower()}"
     return output_dir / f"{stem}{suffix}"
 
 
@@ -85,6 +85,9 @@ def main(argv: list[str] | None = None) -> int:
             action = "Extracted"
     except subprocess.CalledProcessError as exc:
         print(f"ffmpeg failed while preparing audio: {exc}", file=sys.stderr)
+        return 1
+    except FileNotFoundError:
+        print("ffmpeg not found. Please install ffmpeg and ensure it is on your PATH.", file=sys.stderr)
         return 1
     except OSError as exc:
         print(f"Failed to prepare audio: {exc}", file=sys.stderr)
