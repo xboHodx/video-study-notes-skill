@@ -258,7 +258,7 @@ def _resolve_source_with_packaged_fallback(raw: str | None, stack: ExitStack) ->
 
 def _is_target_under_copy_ignored_dir(source: Path, target: Path) -> bool:
     try:
-        rel = target.resolve().relative_to(source.resolve())
+        rel = _path_for_overlap_check(target).relative_to(source.resolve())
     except ValueError:
         return False
 
@@ -330,12 +330,17 @@ def _install_symlink_or_copy(source: Path, target: Path, mode: str) -> tuple[str
 
 def _paths_overlap(left: Path, right: Path) -> bool:
     left_resolved = left.resolve()
-    right_resolved = right.resolve()
+    right_resolved = _path_for_overlap_check(right)
     return (
         left_resolved == right_resolved
         or left_resolved in right_resolved.parents
         or right_resolved in left_resolved.parents
     )
+
+
+def _path_for_overlap_check(path: Path) -> Path:
+    parent = path.parent.resolve()
+    return parent / path.name
 
 
 def main(argv: list[str] | None = None) -> int:
