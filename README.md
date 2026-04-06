@@ -1,7 +1,7 @@
 # video-study-notes-skill
 这是一个可以让ai自动从b站、油管等视频网站下载视频、音频、字幕，分析内容，最终生成一份带截图的高质量笔记的skill。
 
-推荐在linux环境中使用，若需要在windows或者mac环境下使用，让ai自己修改python脚本
+推荐在linux环境中使用，若需要在windows或者mac环境下使用，让ai自己修改python脚本，或使用：https://github.com/MikeHuang2000/video-study-notes-skill-win
 
 ## 两种安装方法
 
